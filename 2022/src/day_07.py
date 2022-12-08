@@ -77,16 +77,18 @@ def generate_directories(commands: Union[List[str], TextIO]) -> Dict[str, Direct
 def stringify_directories(directories: Dict[str, Directory]) -> List[str]:
     results: List[str] = []
 
-    def closure(directory_path: str) -> None:
+    def closure(directory_path: str, depth: int = 0) -> None:
         directory = directories[directory_path if directory_path != "" else "/"]
-        results.append(f"- {directory} (dir)")
+        results.append(f"{' ' * depth * 2}- {directory.name} (dir)")
 
         for file in sorted(directory.files, key=lambda x: x.name):
-            results.append(f"  - {file.name}, (file, size={file.size})")
+            results.append(
+                f"{' ' * depth * 2}  - {file.name}, (file, size={file.size})"
+            )
 
         for subdirectory_name in sorted(directory.subdirectories):
             subdirectory_path = directory_path + "/" + subdirectory_name
-            closure(subdirectory_path)
+            closure(subdirectory_path, depth + 1)
 
     closure("")
     return results
@@ -142,20 +144,20 @@ def test_generate_directories() -> None:
     ]
 
     expected_result = [
-        "- Directory(name='/') (dir)",
+        "- / (dir)",
         "  - b.txt, (file, size=14848514)",
         "  - c.dat, (file, size=8504156)",
-        "- Directory(name='/a') (dir)",
-        "  - f, (file, size=29116)",
-        "  - g, (file, size=2557)",
-        "  - h.lst, (file, size=62596)",
-        "- Directory(name='/a/e') (dir)",
-        "  - i, (file, size=584)",
-        "- Directory(name='/d') (dir)",
-        "  - d.ext, (file, size=5626152)",
-        "  - d.log, (file, size=8033020)",
-        "  - j, (file, size=4060174)",
-        "  - k, (file, size=7214296)",
+        "  - /a (dir)",
+        "    - f, (file, size=29116)",
+        "    - g, (file, size=2557)",
+        "    - h.lst, (file, size=62596)",
+        "    - /a/e (dir)",
+        "      - i, (file, size=584)",
+        "  - /d (dir)",
+        "    - d.ext, (file, size=5626152)",
+        "    - d.log, (file, size=8033020)",
+        "    - j, (file, size=4060174)",
+        "    - k, (file, size=7214296)",
     ]
 
     directories_by_directory_path = generate_directories(commands)
