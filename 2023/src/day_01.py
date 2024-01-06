@@ -105,7 +105,7 @@ def get_calibration_values_composite(lines: Iterable[str]) -> int:
 
 
 if __name__ == "__main__":
-    filename = "2023/data/day_01.txt"
+    lines = helpers.generate_lines("2023/data/day_01.txt")
 
-    print(get_calibration_values_simple(helpers.generate_lines(filename)))
-    print(get_calibration_values_composite(helpers.generate_lines(filename)))
+    print(get_calibration_values_simple(lines))
+    print(get_calibration_values_composite(lines))
