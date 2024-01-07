@@ -1,6 +1,6 @@
 from typing import Dict, Iterable, Tuple
 
-from . import helpers
+import helpers
 
 
 def convert_to_draws_dict(draws_string: str) -> Dict[str, int]:

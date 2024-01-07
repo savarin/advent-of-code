@@ -13,10 +13,10 @@ pyflakes .
 
 # Run mypy for type checking
 echo "Running mypy..."
-mypy . --strict --exclude 2022/src/
+mypy . --strict --ignore-missing-imports --exclude 2022/src/
 
 # Run pytest for running unit tests
 echo "Running pytest..."
-pytest
+PYTHONPATH="$(pwd)/2023/src" pytest
 
 echo "All checks passed!"

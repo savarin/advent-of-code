@@ -1,6 +1,6 @@
 import pytest
 
-from . import day_02
+import day_02
 
 
 @pytest.fixture

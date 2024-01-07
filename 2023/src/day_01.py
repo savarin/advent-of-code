@@ -1,6 +1,6 @@
 from typing import List, Iterable, Optional
 
-from . import helpers
+import helpers
 
 
 def get_first_number(string: str) -> Optional[str]:

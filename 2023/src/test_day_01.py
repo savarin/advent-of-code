@@ -1,4 +1,4 @@
-from . import day_01
+import day_01
 
 
 def test_get_calibration_values_simple() -> None:
