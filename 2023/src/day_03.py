@@ -25,7 +25,7 @@ def get_neighbors(
     return neighbors
 
 
-def get_part_numbers_sum(lines: Iterable[str]) -> int:
+def get_part_numbers_sum(lines: Iterable[str]) -> Tuple[int, int]:
     digit_chars = ""
     digit_locations = set()
     digits = {}
@@ -59,11 +59,12 @@ def get_part_numbers_sum(lines: Iterable[str]) -> int:
             if char == ".":
                 continue
 
-            symbol_locations.append((i, j))
+            symbol_locations.append(((i, j), char))
 
     part_numbers = []
+    gear_candidates = collections.defaultdict(list)
 
-    for symbol_location in symbol_locations:
+    for symbol_location, symbol in symbol_locations:
         for neighbor in get_neighbors(symbol_location, max_row_index, max_column_index):
             is_digit_adjacent = False
 
@@ -74,12 +75,22 @@ def get_part_numbers_sum(lines: Iterable[str]) -> int:
 
             if is_digit_adjacent:
                 part_numbers.append(digit_pair[0])
+
+                if symbol == "*":
+                    gear_candidates[symbol_location].append(digit_pair[0])
+
                 del digits[digit_pair]
 
             if len(digits) == 0:
                 break
 
-    return sum(part_numbers)
+    gear_ratio_total = 0
+
+    for location, numbers in gear_candidates.items():
+        if len(numbers) == 2:
+            gear_ratio_total += numbers[0] * numbers[1]
+
+    return sum(part_numbers), gear_ratio_total
 
 
 if __name__ == "__main__":
