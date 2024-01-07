@@ -26,11 +26,18 @@ def get_neighbors(
 
 
 def get_part_numbers_sum(lines: Iterable[str]) -> Tuple[int, int]:
+    # Collect in dictionary digit-count as key and locations as values
+    # Example:
+    #   {(467, 0): [(0, 0), (0, 1), (0, 2)] denotes the first value of 467 at
+    #   the locations (0, 0), (0, 1) and (0, 2)
     digit_chars = ""
     digit_locations = set()
     digits = {}
     digit_count: DefaultDict[int, int] = collections.defaultdict(int)
 
+    # Collect in list tuples representing part location and part character
+    # Example:
+    #   [((1, 3), *)] denotes * at location (1, 3)
     symbol_locations = []
 
     max_row_index, max_column_index = 0, 0
@@ -62,6 +69,11 @@ def get_part_numbers_sum(lines: Iterable[str]) -> Tuple[int, int]:
             symbol_locations.append(((i, j), char))
 
     part_numbers = []
+
+    # Collect in dictionary asterisk location as key and part numbers as values
+    # Example:
+    #   {(1, 3): [467, 35]} denotes asterisk at location (1, 3) having adjacent
+    #   part numbers 467 and 35
     gear_candidates = collections.defaultdict(list)
 
     for symbol_location, symbol in symbol_locations:
