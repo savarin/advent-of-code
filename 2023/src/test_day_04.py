@@ -1,7 +1,11 @@
+from typing import Sequence
+import pytest
+
 import day_04
 
 
-def test_count_points() -> None:
+@pytest.fixture
+def cards() -> Sequence[day_04.Card]:
     lines = [
         "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53",
         "Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19",
@@ -11,9 +15,17 @@ def test_count_points() -> None:
         "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11",
     ]
 
-    assert day_04.count_points(day_04.parse_card(lines[0])) == 8
-    assert day_04.count_points(day_04.parse_card(lines[1])) == 2
-    assert day_04.count_points(day_04.parse_card(lines[2])) == 2
-    assert day_04.count_points(day_04.parse_card(lines[3])) == 1
-    assert day_04.count_points(day_04.parse_card(lines[4])) == 0
-    assert day_04.count_points(day_04.parse_card(lines[5])) == 0
+    return [day_04.parse_card(line) for line in lines]
+
+
+def test_count_points(cards: Sequence[day_04.Card]) -> None:
+    assert day_04.count_points(cards[0]) == 8
+    assert day_04.count_points(cards[1]) == 2
+    assert day_04.count_points(cards[2]) == 2
+    assert day_04.count_points(cards[3]) == 1
+    assert day_04.count_points(cards[4]) == 0
+    assert day_04.count_points(cards[5]) == 0
+
+
+def test_count_cards(cards: Sequence[day_04.Card]) -> None:
+    assert day_04.count_cards(cards) == 30

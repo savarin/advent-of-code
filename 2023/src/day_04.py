@@ -1,4 +1,5 @@
-from typing import List, Set
+from typing import Counter, List, Sequence, Set
+import collections
 import dataclasses
 
 import helpers
@@ -65,24 +66,48 @@ def parse_card(line: str) -> Card:
     return Card(int(card_id), n_winners, items)
 
 
-def count_points(card: Card) -> int:
+def count_match(card: Card) -> int:
     counter = 0
 
     for select in card.selects:
         if select in card.winners:
             counter += 1
 
+    return counter
+
+
+def count_points(card: Card) -> int:
+    counter = count_match(card)
     points = 0 if counter == 0 else 2 ** (counter - 1)
     assert isinstance(points, int)
 
     return points
 
 
+def count_cards(cards: Sequence[Card]) -> int:
+    counts: Counter[int] = collections.Counter()
+
+    for card in cards:
+        match = count_match(card)
+        copies = counts[card.id]
+
+        for i in range(match):
+            counts[card.id + i + 1] += 1 + copies
+
+    total_copies = sum([v for _, v in counts.items()])
+    return len(cards) + total_copies
+
+
 if __name__ == "__main__":
     lines = helpers.generate_lines("2023/data/day_04.txt")
     total = 0
+    cards = []
 
     for line in lines:
-        total += count_points(parse_card(line))
+        card = parse_card(line)
+        total += count_points(card)
+        cards.append(card)
 
     print(total)
+
+    print(count_cards(cards))
