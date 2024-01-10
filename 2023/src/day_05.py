@@ -61,15 +61,22 @@ def init_almanac(lines: Iterable[str]) -> Tuple[Almanac, List[int]]:
 
         while line_index < len(line):
             match item_counter:
+                # Scan line starting with specific word.
+                #   seeds:
                 case 0:
                     line_index = helpers.expect(line, line_index, "seeds:")
                     item_counter += 1
 
+                # Scan line with digits of indeterminate length.
+                #   79 14 55 13
                 case 1:
                     line_index = helpers.parse_whitespace(line, line_index)
                     seed, line_index = helpers.parse_digits(line, line_index)
                     seeds.append(int(seed))
 
+                # Scan line with mapping ending with specific word and includes
+                # the string '-to-' separating the source and target terms.
+                #   seed-to-soil map:
                 case _:
                     if item_counter % 2 == 0:
                         assert line.endswith(" map:")
@@ -79,6 +86,8 @@ def init_almanac(lines: Iterable[str]) -> Tuple[Almanac, List[int]]:
                         item_counter += 1
                         break
 
+                    # Scan line with exactly 3 digits.
+                    #   50 98 2
                     target_start, line_index = helpers.parse_digits(line, line_index)
                     line_index = helpers.parse_whitespace(line, line_index)
                     source_start, line_index = helpers.parse_digits(line, line_index)
