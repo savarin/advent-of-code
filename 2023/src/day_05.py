@@ -5,28 +5,35 @@ import helpers
 
 
 @dataclasses.dataclass
-class Dictionary:
+class Range:
     source: str
     target: str
 
     def __post_init__(self) -> None:
-        self.dictionary: Dict[int, int] = {}
+        self.dictionary: Dict[Tuple[int, int], int] = {}
 
 
 @dataclasses.dataclass
 class Almanac:
     def __post_init__(self) -> None:
-        self.dictionaries: Dict[str, Dictionary] = {}
+        self.dictionaries: Dict[str, Range] = {}
 
     def init_dictionary(self, source: str, target: str) -> None:
-        self.dictionaries[source] = Dictionary(source, target)
+        self.dictionaries[source] = Range(source, target)
 
     def update_dictionary(
         self, source: str, source_start: int, target_start: int, size: int
     ) -> None:
-        for i in range(size):
-            print(i)
-            self.dictionaries[source].dictionary[source_start + i] = target_start + i
+        self.dictionaries[source].dictionary[
+            (source_start, source_start + size)
+        ] = target_start
+
+    def find_target(self, source: str, source_value: int) -> int:
+        for k, v in self.dictionaries[source].dictionary.items():
+            if k[0] <= source_value < k[1]:
+                return v + source_value - k[0]
+
+        return source_value
 
 
 def init_almanac(lines: Iterable[str]) -> Tuple[Almanac, List[int]]:
@@ -86,7 +93,7 @@ def find_min_location(almanac: Almanac, seeds: List[int]) -> Tuple[int, int]:
 
         while target != "location":
             target = almanac.dictionaries[source].target
-            value = almanac.dictionaries[source].dictionary.get(value, value)
+            value = almanac.find_target(source, value)
             source = target
 
         if min_location is None or min_location > value:
@@ -95,3 +102,11 @@ def find_min_location(almanac: Almanac, seeds: List[int]) -> Tuple[int, int]:
 
     assert min_location is not None and min_seed is not None
     return min_location, min_seed
+
+
+if __name__ == "__main__":
+    lines = helpers.generate_lines("2023/data/day_05.txt")
+    almanac, seeds = init_almanac(lines)
+    min_location, min_seed = find_min_location(almanac, seeds)
+
+    print(min_location, min_seed)
