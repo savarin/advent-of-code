@@ -7,11 +7,15 @@ def generate_lines(filename: str) -> Generator[str, None, None]:
             yield line.strip()
 
 
-def expect(line: str, line_index: int, char: str) -> int:
-    if char == line[line_index]:
-        return line_index + 1
+def expect(line: str, line_index: int, chars: str) -> int:
+    for char in chars:
+        if char == line[line_index]:
+            line_index += 1
+            continue
 
-    raise ValueError(f"Expected {char} but found {line[line_index]}.")
+        raise ValueError(f"Expected {char} but found {line[line_index]}.")
+
+    return line_index
 
 
 def parse_digits(line: str, line_index: int) -> Tuple[str, int]:
