@@ -1,4 +1,4 @@
-from typing import Dict, List, Iterable, Tuple
+from typing import Dict, List, Optional, Iterable, Tuple
 import dataclasses
 
 import helpers
@@ -28,12 +28,22 @@ class Almanac:
             (source_start, source_start + size)
         ] = target_start
 
-    def find_target(self, source: str, source_value: int) -> int:
+    def fill_dictionary(self, source: str) -> None:
+        keys = sorted(self.dictionaries[source].dictionary.keys())
+        source_start = 0
+
+        for k, v in keys:
+            if source_start < k:
+                self.dictionaries[source].dictionary[(source_start, k)] = source_start
+
+            source_start = v
+
+    def find_target(self, source: str, source_value: int) -> Tuple[int, Optional[int]]:
         for k, v in self.dictionaries[source].dictionary.items():
             if k[0] <= source_value < k[1]:
-                return v + source_value - k[0]
+                return v + source_value - k[0], k[1] - source_value - 1
 
-        return source_value
+        return source_value, None
 
 
 def init_almanac(lines: Iterable[str]) -> Tuple[Almanac, List[int]]:
@@ -82,10 +92,10 @@ def init_almanac(lines: Iterable[str]) -> Tuple[Almanac, List[int]]:
     return almanac, seeds
 
 
-def find_min_location(almanac: Almanac, seeds: List[int]) -> Tuple[int, int]:
+def find_min_location_individual(almanac: Almanac, seeds: List[int]) -> Tuple[int, int]:
     min_seed, min_location = None, None
 
-    for seed in seeds:
+    for i, seed in enumerate(seeds):
         source = "seed"
         value = seed
 
@@ -93,7 +103,7 @@ def find_min_location(almanac: Almanac, seeds: List[int]) -> Tuple[int, int]:
 
         while target != "location":
             target = almanac.dictionaries[source].target
-            value = almanac.find_target(source, value)
+            value, _ = almanac.find_target(source, value)
             source = target
 
         if min_location is None or min_location > value:
@@ -104,9 +114,49 @@ def find_min_location(almanac: Almanac, seeds: List[int]) -> Tuple[int, int]:
     return min_location, min_seed
 
 
+def find_min_location_range(almanac: Almanac, seeds: List[int]) -> Tuple[int, int]:
+    min_seed, min_location = None, None
+
+    # Fill gaps to maximize ability to skip lookups.
+    for k in almanac.dictionaries:
+        almanac.fill_dictionary(k)
+
+    for i in range(0, len(seeds), 2):
+        skip_count = 0
+
+        for j in range(seeds[i], seeds[i] + seeds[i + 1]):
+            if skip_count > 0:
+                skip_count -= 1
+                continue
+
+            assert skip_count == 0
+
+            sizes = []
+            source = "seed"
+            value = j
+
+            target = None
+
+            while target != "location":
+                target = almanac.dictionaries[source].target
+                value, size = almanac.find_target(source, value)
+                source = target
+                sizes.append(size if size is not None else 0)
+
+            if min_location is None or min_location > value:
+                min_location = value
+                min_seed = j
+
+            # Ensure skip range is the minimum of all contiguous ranges.
+            skip_count = min(sizes)
+
+    assert min_location is not None and min_seed is not None
+    return min_location, min_seed
+
+
 if __name__ == "__main__":
     lines = helpers.generate_lines("2023/data/day_05.txt")
     almanac, seeds = init_almanac(lines)
-    min_location, min_seed = find_min_location(almanac, seeds)
 
-    print(min_location, min_seed)
+    print(find_min_location_individual(almanac, seeds))
+    print(find_min_location_range(almanac, seeds))

@@ -41,9 +41,17 @@ humidity-to-location map:
 56 93 4"""
 
 
-def test_find_min_location(document: str) -> None:
+def test_find_min_location_individual(document: str) -> None:
     almanac, seeds = day_05.init_almanac(document.split("\n"))
-    min_location, min_seed = day_05.find_min_location(almanac, seeds)
+    min_location, min_seed = day_05.find_min_location_individual(almanac, seeds)
 
     assert min_location == 35
     assert min_seed == 13
+
+
+def test_find_min_location_range(document: str) -> None:
+    almanac, seeds = day_05.init_almanac(document.split("\n"))
+    min_location, min_seed = day_05.find_min_location_range(almanac, seeds)
+
+    assert min_location == 46
+    assert min_seed == 82
