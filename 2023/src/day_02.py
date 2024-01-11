@@ -5,6 +5,8 @@ of colored cubes are drawn from a bag. The tasks include determining which games
 are possible given certain limitations on the number of cubes of each color, and
 calculating the minimum set of cubes required for each game.
 
+https://adventofcode.com/2023/day/2
+
 Functions:
 - convert_to_draws_dict: Converts a string of draws into a dictionary of colors
   and counts.
@@ -162,9 +164,10 @@ def add_set_powers(lines: Iterable[str]) -> int:
 # Main execution point
 if __name__ == "__main__":
     # Generate and process lines from the data file
-    lines = helpers.generate_lines("2023/data/day_02.txt")
+    lines = list(helpers.generate_lines("2023/data/day_02.txt"))
 
     # Print the sum of IDs of valid games within given limits
     print(add_valid_games({"red": 12, "green": 13, "blue": 14}, lines))
+
     # Print the sum of powers of minimum sets of cubes for each game
     print(add_set_powers(lines))

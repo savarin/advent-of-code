@@ -6,6 +6,8 @@ final locations. The goal is to determine the lowest location number that
 corresponds to any of the initial seed numbers, considering both individual
 seeds and ranges of seeds.
 
+https://adventofcode.com/2023/day/5
+
 Classes:
 - Range: Represents a mapping from source category numbers to target category
   numbers.

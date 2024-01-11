@@ -3,6 +3,8 @@ This module is part of a solution to the "Wait For It" problem from the 2023
 Advent of Code. It focuses on analyzing boat race parameters and determining the
 number of ways to win a race.
 
+https://adventofcode.com/2023/day/6
+
 Functions:
 - scan_race_parameters(lines): Extracts and parses race time and distance data
   from input lines.

@@ -5,6 +5,8 @@ symbols. The primary tasks are to compute the sum of part numbers adjacent to
 symbols and to determine the sum of gear ratios, where gears are represented by
 '*' symbols adjacent to exactly two part numbers.
 
+https://adventofcode.com/2023/day/3
+
 Functions:
 - get_neighbors: Determines the adjacent locations to a given grid location.
 - get_part_numbers_sum: Calculates the sum of part numbers and the sum of gear

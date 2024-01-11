@@ -6,6 +6,8 @@ points based on the number of matches between these numbers, and in the second
 part, to determine the total number of scratchcards including those won through
 matching.
 
+https://adventofcode.com/2023/day/4
+
 Classes:
 - Card: Represents a scratchcard with its unique ID, winning numbers, and
   player's numbers.
@@ -144,5 +146,8 @@ if __name__ == "__main__":
         total += count_points(card)
         cards.append(card)
 
-    print(total)  # Print the total points from all scratchcards
-    print(count_cards(cards))  # Print the total number of scratchcards including copies
+    # Print the total points from all scratchcards
+    print(total)
+
+    # Print the total number of scratchcards including copies
+    print(count_cards(cards))
