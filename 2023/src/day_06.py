@@ -60,3 +60,11 @@ if __name__ == "__main__":
         product *= count_ways(times[i], distances[i])
 
     print(product)
+
+    actual_time, actual_distance = "", ""
+
+    for i in range(len(times)):
+        actual_time += str(times[i])
+        actual_distance += str(distances[i])
+
+    print(count_ways(int(actual_time), int(actual_distance)))
