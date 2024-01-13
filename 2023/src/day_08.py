@@ -1,4 +1,6 @@
-from typing import Dict, Iterable, Tuple
+from typing import Callable, Dict, Iterable, Tuple
+import math
+
 import helpers
 
 
@@ -44,12 +46,15 @@ def scan_map(lines: Iterable[str]) -> Tuple[str, Dict[str, Tuple[str, str]]]:
 
 
 def follow_directions_single(
-    instructions: str, directions: Dict[str, Tuple[str, str]]
+    instructions: str,
+    directions: Dict[str, Tuple[str, str]],
+    start_location: str,
+    condition: Callable[[str], bool],
 ) -> int:
-    current_location = "AAA"
+    current_location = start_location
     step_counter = 0
 
-    while current_location != "ZZZ":
+    while condition(current_location):
         next_direction = instructions[step_counter % len(instructions)]
         next_index = "LR".index(next_direction)
 
@@ -60,8 +65,31 @@ def follow_directions_single(
     return step_counter
 
 
+def follow_directions_multiple(
+    instructions: str, directions: Dict[str, Tuple[str, str]]
+) -> int:
+    start_locations = []
+
+    for location in directions:
+        if location[2] == "A":
+            start_locations.append(location)
+
+    step_counters = []
+
+    for location in start_locations:
+        step_counter = follow_directions_single(
+            instructions, directions, location, lambda x: x[2] != "Z"
+        )
+        step_counters.append(step_counter)
+
+    return math.lcm(*step_counters)
+
+
 if __name__ == "__main__":
     lines = list(helpers.generate_lines("2023/data/day_08.txt"))
-
     instructions, directions = scan_map(lines)
-    print(follow_directions_single(instructions, directions))
+
+    print(
+        follow_directions_single(instructions, directions, "AAA", lambda x: x != "ZZZ")
+    )
+    print(follow_directions_multiple(instructions, directions))
