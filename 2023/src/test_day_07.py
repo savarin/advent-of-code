@@ -14,4 +14,5 @@ QQQJA 483"""
 
 
 def test_calculate_winnings(document: str) -> None:
-    assert day_07.calculate_winnings(document.split("\n")) == 6440
+    assert day_07.calculate_winnings(document.split("\n"), False) == 6440
+    assert day_07.calculate_winnings(document.split("\n"), True) == 5905

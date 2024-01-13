@@ -1,4 +1,4 @@
-from typing import DefaultDict, Iterable, List, Tuple
+from typing import DefaultDict, Iterable, List, Sequence, Tuple
 import collections
 import dataclasses
 
@@ -7,24 +7,13 @@ import helpers
 
 
 RANKS = "..23456789TJQKA"
+WILDCARD_RANKS = "..J23456789TQKA"
 
 
-def calculate_winnings(lines: Iterable[str]) -> int:
-    hand_bid_pairs = scan_hand_bid_pairs(lines)
-    type_bid_pairs = []
-
-    for hand, bid in hand_bid_pairs:
-        hand_type = convert_hand_to_custom_type(hand)
-        type_bid_pairs.append((hand_type, int(bid)))
-
-    type_bid_pairs = sorted(type_bid_pairs, key=lambda x: x[0])
-
-    winnings = 0
-
-    for i, type_bid_pair in enumerate(type_bid_pairs, start=1):
-        winnings += type_bid_pair[1] * i
-
-    return winnings
+@dataclasses.dataclass(frozen=True)
+class RankCount:
+    count: int
+    rank: int
 
 
 def scan_hand_bid_pairs(lines: Iterable[str]) -> List[Tuple[str, str]]:
@@ -42,47 +31,119 @@ def scan_hand_bid_pairs(lines: Iterable[str]) -> List[Tuple[str, str]]:
     return pairs
 
 
-def convert_hand_to_custom_type(hand: str) -> Tuple[int, ...]:
-    count: DefaultDict[int, int] = collections.defaultdict(int)
-    custom_hand = []
+def evaluate_hand_strength(ranked_hand: Sequence[int]) -> int:
+    counts = sorted(
+        [(v, k) for k, v in collections.Counter(ranked_hand).items()], reverse=True
+    )
+    rank_counts = [RankCount(item[0], item[1]) for item in counts]
+
+    if rank_counts[0].count == 5:
+        return 6
+
+    elif rank_counts[0].count == 4:
+        assert rank_counts[1].count == 1
+        return 5
+
+    elif rank_counts[0].count == 3:
+        if rank_counts[1].count == 2:
+            return 4
+
+        assert rank_counts[1].count == 1 and rank_counts[2].count == 1
+        return 3
+
+    elif rank_counts[0].count == 2:
+        if rank_counts[1].count == 2:
+            assert rank_counts[2].count == 1
+            return 2
+
+        assert (
+            rank_counts[1].count == 1
+            and rank_counts[2].count == 1
+            and rank_counts[3].count == 1
+        )
+        return 1
+
+    return 0
+
+
+def convert_hand_to_hand_type(hand: str) -> Tuple[int, ...]:
+    ranked_hand = [RANKS.index(char) for char in hand]
+    hand_strength = evaluate_hand_strength(ranked_hand)
+
+    return (hand_strength, *ranked_hand)
+
+
+def generate_all_wildcard_hands(non_wildcard_hand: str) -> List[str]:
+    if len(non_wildcard_hand) == 5:
+        return [non_wildcard_hand]
+
+    elif non_wildcard_hand == "":
+        return ["AAAAA"]
+
+    stack = [""]
+    hands = []
+
+    wildcard_count = 5 - len(non_wildcard_hand)
+
+    while stack:
+        item = stack.pop(0)
+
+        for char in set(non_wildcard_hand):
+            hand = item + char
+
+            if len(hand) == wildcard_count:
+                hands.append(hand)
+                continue
+
+            stack.append(hand)
+
+    return [hand + non_wildcard_hand for hand in hands]
+
+
+def convert_wildcard_hand_to_hand_type(hand: str) -> Tuple[int, ...]:
+    ranked_hand = []
+    non_wildcard_hand = ""
 
     for char in hand:
-        char_rank = RANKS.index(char)
-        custom_hand.append(char_rank)
-        count[char_rank] += 1
+        ranked_hand.append(WILDCARD_RANKS.index(char))
 
-    reverse_count = sorted([(v, k) for k, v in count.items()], reverse=True)
-    reverse = [RankCount(*item) for item in reverse_count]
+        if char != "J":
+            non_wildcard_hand += char
 
-    if reverse[0].count == 5:
-        return (6, *custom_hand)
+    all_hands = generate_all_wildcard_hands(non_wildcard_hand)
+    max_hand_strength = None
 
-    elif reverse[0].count == 4:
-        assert reverse[1].count == 1
-        return (5, *custom_hand)
+    for hand in all_hands:
+        hand_strength = convert_hand_to_hand_type(hand)[0]
 
-    elif reverse[0].count == 3:
-        if reverse[1].count == 2:
-            return (4, *custom_hand)
+        if max_hand_strength is None or max_hand_strength < hand_strength:
+            max_hand_strength = hand_strength
 
-        assert reverse[1].count == 1 and reverse[2].count == 1
-        return (3, *custom_hand)
-
-    elif reverse[0].count == 2:
-        if reverse[1].count == 2:
-            assert reverse[2].count == 1
-            return (2, *custom_hand)
-
-        assert reverse[1].count == 1 and reverse[2].count == 1 and reverse[3].count == 1
-        return (1, *custom_hand)
-
-    return (0, *custom_hand)
+    assert max_hand_strength is not None
+    return (max_hand_strength, *ranked_hand)
 
 
-@dataclasses.dataclass(frozen=True)
-class RankCount:
-    count: int
-    rank: int
+def calculate_winnings(lines: Iterable[str], is_wildcard_version: bool) -> int:
+    hand_bid_pairs = scan_hand_bid_pairs(lines)
+    type_bid_pairs = []
+
+    for hand, bid in hand_bid_pairs:
+        if not is_wildcard_version:
+            hand_type = convert_hand_to_hand_type(hand)
+
+        else:
+            hand_type = convert_wildcard_hand_to_hand_type(hand)
+
+        type_bid_pairs.append((hand_type, int(bid)))
+
+    type_bid_pairs = sorted(type_bid_pairs, key=lambda x: x[0])
+
+    winnings = 0
+
+    for i, type_bid_pair in enumerate(type_bid_pairs, start=1):
+        winnings += type_bid_pair[1] * i
+
+    return winnings
 
 
 def convert_hand_to_reverse_rank_count(hand: str) -> List[RankCount]:
@@ -138,5 +199,7 @@ def convert_reverse_rank_count_to_hand_type(
 
 
 if __name__ == "__main__":
-    lines = helpers.generate_lines("2023/data/day_07.txt")
-    print(calculate_winnings(lines))
+    lines = list(helpers.generate_lines("2023/data/day_07.txt"))
+
+    print(calculate_winnings(lines, False))
+    print(calculate_winnings(lines, True))
