@@ -1,4 +1,4 @@
-from typing import Iterable, List, Sequence, Generator
+from typing import Generator, Iterable, List, Sequence, Tuple
 import helpers
 
 
@@ -17,9 +17,8 @@ def scan_values(lines: Iterable[str]) -> Generator[List[int], None, None]:
         yield values
 
 
-def extrapolate_next_value(values: Sequence[int]) -> int:
+def create_steps(values: Sequence[int]) -> List[Sequence[int]]:
     steps = [values]
-    list_count = 1
 
     while True:
         current_diff = steps[-1]
@@ -39,27 +38,33 @@ def extrapolate_next_value(values: Sequence[int]) -> int:
             next_diff.append(current_diff[i] - current_diff[i - 1])
 
         steps.append(next_diff)
-        list_count += 1
 
-    current_value = None
+    return steps
 
-    for i in range(list_count, 0, -1):
-        if current_value is None:
-            current_value = 0
-            continue
 
+def extrapolate_next_value(values: Sequence[int]) -> Tuple[int, int]:
+    steps = create_steps(values)
+    next_value = 0
+
+    prior_starts = [0]
+
+    for i in range(len(steps) - 1, 0, -1):
         current_diff = steps[i - 1]
-        current_value += current_diff[-1]
+        next_value += current_diff[-1]
 
-    assert current_value is not None
-    return current_value
+        prior_starts.append(current_diff[0] - prior_starts[-1])
+
+    return next_value, prior_starts[-1]
 
 
 if __name__ == "__main__":
     lines = list(helpers.generate_lines("2023/data/day_09.txt"))
-    total = 0
+    next_total, prior_total = 0, 0
 
     for values in scan_values(lines):
-        total += extrapolate_next_value(values)
+        next_item, prior_item = extrapolate_next_value(values)
+        next_total += next_item
+        prior_total += prior_item
 
-    print(total)
+    print(next_total)
+    print(prior_total)

@@ -8,9 +8,12 @@ def test_extrapolate_next_value() -> None:
 10 13 16 21 30 45"""
 
     lines = document.split("\n")
-    total = 0
+    next_total, prior_total = 0, 0
 
     for values in day_09.scan_values(lines):
-        total += day_09.extrapolate_next_value(values)
+        next_item, prior_item = day_09.extrapolate_next_value(values)
+        next_total += next_item
+        prior_total += prior_item
 
-    assert total == 114
+    assert next_total == 114
+    assert prior_total == 2
