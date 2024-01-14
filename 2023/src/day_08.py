@@ -1,3 +1,28 @@
+"""
+This module is designed to solve the "Haunted Wasteland" problem from the 2023
+Advent of Code, Day 8. It includes functions for processing and interpreting a
+map of a network of labeled nodes, based on a set of left/right instructions.
+The primary challenge involves navigating this network from a starting node to a
+destination node, with a special focus on the shortest path and optimal
+navigation strategy. The module also tackles an extended challenge of navigating
+from multiple starting nodes to their respective destinations simultaneously.
+
+The functions in this module are tailored to parse the map data, identify
+navigation instructions, and execute these instructions to traverse the node
+network. This involves both single-path navigation and a more complex scenario
+where multiple paths are navigated in parallel, adhering to the unique rules of
+the puzzle.
+
+https://adventofcode.com/2023/day/8
+
+Functions:
+- scan_map(lines): Parses input lines into navigation instructions and node
+  connections.
+- follow_directions_single(instructions, directions, start_location, condition):
+  Follows instructions from a single node until a specified condition is met.
+- follow_directions_multiple(instructions, directions): Determines the required
+  steps to reach destination nodes from multiple starting nodes simultaneously.
+"""
 from typing import Callable, Dict, Iterable, Tuple
 import math
 
