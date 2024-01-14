@@ -1,3 +1,36 @@
+"""
+This module, as part of the 2023 Advent of Code Day 9 challenge, provides a
+solution to the "Mirage Maintenance" problem. It focuses on analyzing
+environmental data to predict future and past values based on historical
+readings. The problem involves processing a series of numerical values
+representing ecological readings over time, known as 'histories', and using
+these to extrapolate future and past values.
+
+The module includes functions for scanning input data lines, creating sequences
+of differences between consecutive readings, and extrapolating the next and
+prior values based on these sequences. It implements a method to calculate the
+sum of these extrapolated values for each history in the input, providing
+insights into the environmental stability of an oasis.
+
+The module is designed to read input from a file, process each line to extract
+numerical values, and  apply a series of mathematical operations to predict
+future and past values. This is done in the context of an intriguing narrative
+where the user, stranded in a desert, uses a fictional Oasis And Sand
+Instability Sensor (OASIS) to take ecological readings and predict environmental
+changes.
+
+https://adventofcode.com/2023/day/9
+
+Functions:
+- scan_values(lines): Parses input lines and converts them into lists of
+  integers.
+- create_steps(values): Creates sequences of differences between consecutive
+  numbers in a list.
+- extrapolate_next_value(values): Calculates the next and prior values in a
+  sequence based on extrapolation.
+
+"""
+
 from typing import Generator, Iterable, List, Sequence, Tuple
 
 import helpers
