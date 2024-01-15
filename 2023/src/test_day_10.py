@@ -9,7 +9,11 @@ def test_solve_loop() -> None:
 .L-J.
 ....."""
 
-    assert day_10.solve_loop(document.split("\n")) == 4
+    solution, boundary = day_10.solve_loop(document.split("\n"))
+    assert solution == 4
+
+    islands = day_10.get_islands(document.split("\n"), boundary)
+    assert day_10.count_tiles(document.split("\n"), islands, boundary) == 1
 
     document = """\
 -L|F7
@@ -18,7 +22,11 @@ L|7||
 -L-J|
 L|-JF"""
 
-    assert day_10.solve_loop(document.split("\n")) == 4
+    solution, boundary = day_10.solve_loop(document.split("\n"))
+    assert solution == 4
+
+    islands = day_10.get_islands(document.split("\n"), boundary)
+    assert day_10.count_tiles(document.split("\n"), islands, boundary) == 1
 
     document = """\
 ..F7.
@@ -27,7 +35,11 @@ SJ.L7
 |F--J
 LJ..."""
 
-    assert day_10.solve_loop(document.split("\n")) == 8
+    solution, boundary = day_10.solve_loop(document.split("\n"))
+    assert solution == 8
+
+    islands = day_10.get_islands(document.split("\n"), boundary)
+    assert day_10.count_tiles(document.split("\n"), islands, boundary) == 1
 
     document = """\
 7-F7-
@@ -36,4 +48,8 @@ SJLL7
 |F--J
 LJ.LJ"""
 
-    assert day_10.solve_loop(document.split("\n")) == 8
+    solution, boundary = day_10.solve_loop(document.split("\n"))
+    assert solution == 8
+
+    islands = day_10.get_islands(document.split("\n"), boundary)
+    assert day_10.count_tiles(document.split("\n"), islands, boundary) == 1
