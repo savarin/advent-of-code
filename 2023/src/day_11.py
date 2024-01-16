@@ -30,7 +30,7 @@ def scan_galaxies(
 
 
 def create_adjustments(
-    non_empty_rows: List[bool], non_empty_columns: List[bool]
+    non_empty_rows: List[bool], non_empty_columns: List[bool], factor: int = 2
 ) -> Tuple[Dict[int, int], Dict[int, int]]:
     row_adjustments, column_adjustments = {}, {}
     row_counter, column_counter = 0, 0
@@ -39,13 +39,13 @@ def create_adjustments(
         row_adjustments[i] = row_counter
 
         if not row_item:
-            row_counter += 1
+            row_counter += factor - 1
 
     for j, column_item in enumerate(non_empty_columns):
         column_adjustments[j] = column_counter
 
         if not column_item:
-            column_counter += 1
+            column_counter += factor - 1
 
     return row_adjustments, column_adjustments
 
@@ -89,8 +89,12 @@ if __name__ == "__main__":
         non_empty_rows, non_empty_columns
     )
 
-    galaxies = apply_adjustments(galaxies, row_adjustments, column_adjustments)
+    galaxies_1 = apply_adjustments(galaxies.copy(), row_adjustments, column_adjustments)
+    print(sum_distances(galaxies_1))
 
-    total_distance = sum_distances(galaxies)
+    row_adjustments, column_adjustments = create_adjustments(
+        non_empty_rows, non_empty_columns, 1000000
+    )
 
-    print(total_distance)
+    galaxies_2 = apply_adjustments(galaxies.copy(), row_adjustments, column_adjustments)
+    print(sum_distances(galaxies_2))

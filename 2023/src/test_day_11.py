@@ -59,9 +59,11 @@ def test_sum_distances() -> None:
         9: 3,
     }
 
-    galaxies = day_11.apply_adjustments(galaxies, row_adjustments, column_adjustments)
+    galaxies_1 = day_11.apply_adjustments(
+        galaxies.copy(), row_adjustments, column_adjustments
+    )
 
-    assert galaxies == {
+    assert galaxies_1 == {
         0: (0, 4),
         1: (1, 9),
         2: (2, 0),
@@ -73,4 +75,24 @@ def test_sum_distances() -> None:
         8: (11, 5),
     }
 
-    assert day_11.sum_distances(galaxies) == 374
+    assert day_11.sum_distances(galaxies_1) == 374
+
+    row_adjustments, column_adjustments = day_11.create_adjustments(
+        non_empty_rows, non_empty_columns, 10
+    )
+
+    galaxies_2 = day_11.apply_adjustments(
+        galaxies.copy(), row_adjustments, column_adjustments
+    )
+
+    assert day_11.sum_distances(galaxies_2) == 1030
+
+    row_adjustments, column_adjustments = day_11.create_adjustments(
+        non_empty_rows, non_empty_columns, 100
+    )
+
+    galaxies_3 = day_11.apply_adjustments(
+        galaxies.copy(), row_adjustments, column_adjustments
+    )
+
+    assert day_11.sum_distances(galaxies_3) == 8410
